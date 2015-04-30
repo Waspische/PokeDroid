@@ -2,8 +2,6 @@ package com.example.wasp.pokedex.ui.pokemons;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,12 +10,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.wasp.pokedex.R;
 import com.example.wasp.pokedex.dao.PersistancePokemonsDataSource;
 import com.example.wasp.pokedex.model.PersistancePokemon;
-import com.example.wasp.pokedex.model.Pokemon;
+import com.example.wasp.pokedex.provider.PokeServiceImpl;
+import com.example.wasp.pokedex.provider.model.Pokemon;
 import com.example.wasp.pokedex.provider.PokeService;
 import com.example.wasp.pokedex.provider.RestClient;
 
@@ -28,7 +26,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import retrofit.Callback;
-import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
@@ -39,7 +36,7 @@ public class PokemonsFragment extends Fragment {
 
     private PersistancePokemonsDataSource dataSource;
 
-    private RestClient restClient = new RestClient();
+    private PokeServiceImpl pokeService = new PokeServiceImpl();
 
     @InjectView(R.id.listPokemons)
     ListView pokemons;
@@ -60,9 +57,18 @@ public class PokemonsFragment extends Fragment {
 
         dataSource = new PersistancePokemonsDataSource(view.getContext());
         try {
+
+            ArrayAdapter<PersistancePokemon> adapter = new ArrayAdapter<PersistancePokemon>(view.getContext(),
+                    android.R.layout.simple_list_item_1);
+            pokemons.setAdapter(adapter);
+
             dataSource.open();
 
             dataSource.deleteAllPokemons();
+
+            for (Pokemon pokemon : pokeService.getAllPokemons()) {
+                adapter.add(dataSource.createPokemon(pokemon.getName()));
+            }
 
             List<PersistancePokemon> values = dataSource.getAllPokemons();
 
@@ -71,33 +77,11 @@ public class PokemonsFragment extends Fragment {
     //            dataSource.deletePokemon(value.getId());
     //        }
 
-            ArrayAdapter<PersistancePokemon> adapter = new ArrayAdapter<PersistancePokemon>(view.getContext(),
-                    android.R.layout.simple_list_item_1, values);
-            pokemons.setAdapter(adapter);
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        // get pokemon from api
-        PokeService pokeService = restClient.getPokeService();
-
-        Pokemon pokemon = null;
-
-        pokeService.getPokemon("1",new Callback<Pokemon>() {
-            @Override
-            public void success(Pokemon pokemon, Response response) {
-                // success!
-                Log.i("App", pokemon.getName());
-                Log.i("App", pokemon.getResource_uri());
-                // you get the point...
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                // something went wrong
-            }
-        });
 
 //        text.setText(pokemon.getName());
 

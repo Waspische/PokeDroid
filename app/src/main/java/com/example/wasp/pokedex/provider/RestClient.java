@@ -11,8 +11,9 @@ import retrofit.converter.GsonConverter;
  */
 public class RestClient {
 
-    private static final String BASE_URL = "http://pokeapi.co/api/v1";
+    private static final String BASE_URL = "http://pokeapi.co";
     private PokeService pokeService;
+    private PokeMediaService pokeMediaService;
 
     public RestClient()
     {
@@ -21,7 +22,7 @@ public class RestClient {
                 .create();
 
         RestAdapter restAdapter = new RestAdapter.Builder()
-                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setLogLevel(RestAdapter.LogLevel.BASIC)
                 .setEndpoint(BASE_URL)
                 .setConverter(new GsonConverter(gson))
                 .build();

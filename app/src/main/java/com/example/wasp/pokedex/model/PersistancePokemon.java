@@ -27,8 +27,6 @@ public class PersistancePokemon {
 
     @Override
     public String toString() {
-        return "PersistancePokemon{" +
-                "name='" + name + '\'' +
-                '}';
+        return name;
     }
 }

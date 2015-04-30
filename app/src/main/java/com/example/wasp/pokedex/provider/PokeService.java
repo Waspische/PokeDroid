@@ -1,8 +1,6 @@
 package com.example.wasp.pokedex.provider;
 
-import com.example.wasp.pokedex.model.Pokemon;
-
-import java.util.List;
+import com.example.wasp.pokedex.provider.model.Pokemon;
 
 import retrofit.Callback;
 import retrofit.http.GET;
@@ -13,7 +11,10 @@ import retrofit.http.Path;
  */
 public interface PokeService {
 
-        @GET("/pokemon/{pokemonId}/")
-        void getPokemon(@Path("pokemonId") String user, Callback<Pokemon> cb);
+        @GET("/api/v1/pokemon/{pokemonId}/")
+        void getPokemon(@Path("pokemonId") int id, Callback<Pokemon> cb);
+
+        @GET("{url}")
+        void get(@Path("url") String url, Callback<Object> object);
 
 }
