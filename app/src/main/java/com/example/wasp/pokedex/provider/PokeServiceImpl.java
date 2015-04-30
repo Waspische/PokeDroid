@@ -29,7 +29,7 @@ public class PokeServiceImpl {
         // get pokemon service for api
         PokeService pokeService = restClient.getPokeService();
 
-        // get all (151) pokemons from api and insert them in base
+        // get all (151) pokemons from api
 //        for (int i = 0; i < 152; i++) {
         for (int i = 1; i < 10; i++) {
 
