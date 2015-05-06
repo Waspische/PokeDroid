@@ -1,51 +1,61 @@
 package com.example.wasp.pokedex.ui.pokemons;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.example.wasp.pokedex.R;
 import com.example.wasp.pokedex.dao.PersistancePokemonsDataSource;
-import com.example.wasp.pokedex.model.PersistancePokemon;
-import com.example.wasp.pokedex.provider.PokeServiceImpl;
 import com.example.wasp.pokedex.provider.model.Pokemon;
-import com.example.wasp.pokedex.provider.PokeService;
+import com.example.wasp.pokedex.provider.task.AsyncResponse;
+import com.example.wasp.pokedex.provider.task.GetPokedexTask;
 import com.example.wasp.pokedex.provider.RestClient;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import butterknife.OnItemClick;
 
 /**
  * Created by Wasp on 23/04/2015.
  */
-public class PokemonsFragment extends Fragment {
+public class PokemonsFragment extends Fragment implements AsyncResponse{
 
+    // liaison à la base de données
     private PersistancePokemonsDataSource dataSource;
 
-    private RestClient restClient = new RestClient();
+    private final String KEY_POKEMON = "pokemon";
 
+    /**
+     * UI components
+     */
     @InjectView(R.id.listPokemons)
     ListView pokemons;
 
-    @InjectView(R.id.add_button)
-    Button add;
+    ProgressDialog progressDialog;
 
-    @InjectView(R.id.text)
-    TextView text;
+    /**
+     * UI related attributes
+     */
+    private ArrayAdapter<Pokemon> adapter;
+
+    /**
+     * Attributes
+     */
+    private List<Pokemon> pokemonList = new ArrayList<>();
+
+    /**
+     * AsyncTask
+     */
+    public GetPokedexTask getPokedexTask;
 
     public PokemonsFragment() {}
 
@@ -55,71 +65,63 @@ public class PokemonsFragment extends Fragment {
         final View view = inflater.inflate(R.layout.pokemons_fragment, container, false);
         ButterKnife.inject(this, view);
 
-        dataSource = new PersistancePokemonsDataSource(view.getContext());
-        try {
+        // changer l'adapter si on veut mettre plus que le nom
+        adapter = new ArrayAdapter<>(view.getContext(),
+                android.R.layout.simple_list_item_1);
 
-            ArrayAdapter<PersistancePokemon> adapter = new ArrayAdapter<PersistancePokemon>(view.getContext(),
-                    android.R.layout.simple_list_item_1);
-            pokemons.setAdapter(adapter);
+        pokemons.setAdapter(adapter);
 
-            dataSource.open();
-
-            dataSource.deleteAllPokemons();
-
-            PokeService pokeService = restClient.getPokeService();
-
-            // get all (151) pokemons from api
-//        for (int i = 0; i < 152; i++) {
-            for (int i = 1; i < 10; i++) {
-
-                pokeService.getPokemon(i, new Callback<Pokemon>() {
-                    @Override
-                    public void success(Pokemon pokemon, Response response) {
-                        // success!
-                        Log.i("App", pokemon.getName());
-                        Log.i("App", pokemon.getResource_uri());
-                        // you get the point...
-
-                        ArrayAdapter<PersistancePokemon> adapter = (ArrayAdapter<PersistancePokemon>) pokemons.getAdapter();
-                        adapter.add(dataSource.createPokemon(pokemon.getName()));
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        // something went wrong
-                    }
-                });
-                try {
-                    Thread.sleep(250);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            List<PersistancePokemon> values = dataSource.getAllPokemons();
-
-            // reset pokemon list
-    //        for (PersistancePokemon value : values) {
-    //            dataSource.deletePokemon(value.getId());
-    //        }
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-
-//        text.setText(pokemon.getName());
-
+        // appel de la tâche asynchrone pour récupérer les pokémons
+        getPokedexTask = new GetPokedexTask(adapter, getActivity());
+        getPokedexTask.delegate = this;
+        getPokedexTask.execute();
 
         return view;
     }
 
-    @OnClick(R.id.add_button)
-    public void add(){
-        PersistancePokemon pokemon = null;
-        ArrayAdapter<PersistancePokemon> adapter = (ArrayAdapter<PersistancePokemon>) pokemons.getAdapter();
-        pokemon = dataSource.createPokemon("Pikachu");
-        adapter.add(pokemon);
+    @OnItemClick(R.id.listPokemons)
+    public void onPokemonClicked(int position){
+        Intent i = new Intent(getActivity(),PokemonDetailActivity.class);
+        Pokemon selectedPokemon = pokemonList.get(position);
+        i.putExtra(KEY_POKEMON, selectedPokemon);
+        startActivity(i);
     }
+
+    // récupération de la liste de pokémons à la fin de la tâche asynchrone
+    public void processFinish(List<Pokemon> output) {
+        pokemonList = output;
+    }
+
+    public void processFinish(Pokemon output) {
+        // nothing
+    }
+
+    // DEAD CODE
+
+//        dataSource = new PersistancePokemonsDataSource(view.getContext());
+//        try {
+//
+//            pokemons.setAdapter(adapter);
+//
+//            dataSource.open();
+//
+//            dataSource.deleteAllPokemons();
+//
+//            PokeService pokeService = restClient.getPokeService();
+//
+//
+//            new GetAllPokemonsTask(adapter, getActivity()).execute();
+//
+//            List<PersistancePokemon> values = dataSource.getAllPokemons();
+//
+//            // reset pokemon list
+//    //        for (PersistancePokemon value : values) {
+//    //            dataSource.deletePokemon(value.getId());
+//    //        }
+//
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+
 }

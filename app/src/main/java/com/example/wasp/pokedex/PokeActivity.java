@@ -31,6 +31,8 @@ public class PokeActivity extends ActionBarActivity {
         drawerToggle= new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name,  R.string.app_name);
         drawerLayout.setDrawerListener(drawerToggle);
 
+        // TODO ajouter un contrôle pour la présence d'internet
+
     }
 
 

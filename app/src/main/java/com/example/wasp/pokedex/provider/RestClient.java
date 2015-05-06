@@ -1,5 +1,6 @@
 package com.example.wasp.pokedex.provider;
 
+import com.example.wasp.pokedex.provider.Service.PokeService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -8,12 +9,13 @@ import retrofit.converter.GsonConverter;
 
 /**
  * Created by Wasp on 30/04/2015.
+ *
+ * Client servant à créer et récupérer le service REST
  */
 public class RestClient {
 
-    private static final String BASE_URL = "http://pokeapi.co";
+    public static final String BASE_URL = "http://pokeapi.co";
     private PokeService pokeService;
-    private PokeMediaService pokeMediaService;
 
     public RestClient()
     {
@@ -22,7 +24,7 @@ public class RestClient {
                 .create();
 
         RestAdapter restAdapter = new RestAdapter.Builder()
-                .setLogLevel(RestAdapter.LogLevel.BASIC)
+                .setLogLevel(RestAdapter.LogLevel.FULL)
                 .setEndpoint(BASE_URL)
                 .setConverter(new GsonConverter(gson))
                 .build();

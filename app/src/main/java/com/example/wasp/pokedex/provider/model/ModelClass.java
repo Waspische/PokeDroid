@@ -1,11 +1,19 @@
-package com.example.wasp.pokedex.model;
+package com.example.wasp.pokedex.provider.model;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
 
 /**
  * Created by Wasp on 23/04/2015.
+ *
+ * Classe de base contenant les attributs communs à chaque objet renvoyé par l'API
  */
-public class ModelClass {
+public class ModelClass implements Serializable{
 
     private String name;
+
     private String resource_uri;
 
     public String getName() {
