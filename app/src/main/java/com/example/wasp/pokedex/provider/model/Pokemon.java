@@ -20,16 +20,20 @@ public class Pokemon extends ModelClass implements Serializable{
 
     private List<Sprite> sprites;
 
+    private List<Move> moves;
+
+    // convert to meters
     public Double getHeight() {
-        return height;
+        return height / 10 ;
     }
 
     public void setHeight(Double height) {
         this.height = height;
     }
 
+    // convert to kilogram
     public Double getWeight() {
-        return weight;
+        return weight / 10;
     }
 
     public void setWeight(Double weight) {
@@ -42,6 +46,14 @@ public class Pokemon extends ModelClass implements Serializable{
 
     public void setSprites(List<Sprite> sprites) {
         this.sprites = sprites;
+    }
+
+    public List<Move> getMoves() {
+        return moves;
+    }
+
+    public void setMoves(List<Move> moves) {
+        this.moves = moves;
     }
 
     @Override
