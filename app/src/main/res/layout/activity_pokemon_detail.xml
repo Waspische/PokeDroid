@@ -25,7 +25,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minHeight="110dp"
-            android:minWidth="110dp"/>
+            android:minWidth="110dp"
+            android:layout_margin="10dp"/>
+
+        <LinearLayout
+            android:id="@+id/types"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical">
+
+        </LinearLayout>
 
     </LinearLayout>
 

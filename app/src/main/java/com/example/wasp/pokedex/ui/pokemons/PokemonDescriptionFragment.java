@@ -30,6 +30,8 @@ public class PokemonDescriptionFragment extends Fragment {
     TextView pokeWeight;
     @InjectView(R.id.pokeHeight)
     TextView pokeHeight;
+    @InjectView(R.id.pokeDescription)
+    TextView pokeDescription;
 
     /**
      * Attributes
@@ -54,6 +56,7 @@ public class PokemonDescriptionFragment extends Fragment {
 
         pokeHeight.setText(getActivity().getString(R.string.height, pokemon.getHeight().toString()));
         pokeWeight.setText(getActivity().getString(R.string.weight, pokemon.getWeight().toString()));
+        pokeDescription.setText(getActivity().getString(R.string.description, pokemon.getSelectedDescription().getDescription()));
 
         return view;
     }

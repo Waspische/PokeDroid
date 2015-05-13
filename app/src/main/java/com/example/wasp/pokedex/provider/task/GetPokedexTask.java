@@ -8,7 +8,9 @@ import android.widget.ArrayAdapter;
 import com.example.wasp.pokedex.provider.Service.PokeService;
 import com.example.wasp.pokedex.provider.RestClient;
 import com.example.wasp.pokedex.provider.model.Pokemon;
+import com.example.wasp.pokedex.util.PokemonIdComparator;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -50,6 +52,19 @@ public class GetPokedexTask extends AsyncTask<Integer, Integer, List<Pokemon>> {
         result = pokeService.getPokedex().getPokemon();
 
         // TODO order list by id
+        for (Pokemon pokemon : result) {
+            // get id for sort
+            String uri = pokemon.getResource_uri();
+            uri = uri.replaceAll("[^0-9]+", " ");
+            Integer national_id = Integer.parseInt(uri.trim().split(" ")[1]);
+            pokemon.setNational_id(national_id);
+
+            // ajoute une majuscule au début du nom
+            String name = pokemon.getName();
+            pokemon.setName(name.substring(0,1).toUpperCase() + name.substring(1));
+        }
+
+        Collections.sort(result, new PokemonIdComparator());
 
         return result;
     }

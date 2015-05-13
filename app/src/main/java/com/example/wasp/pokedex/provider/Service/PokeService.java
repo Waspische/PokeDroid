@@ -1,5 +1,6 @@
 package com.example.wasp.pokedex.provider.Service;
 
+import com.example.wasp.pokedex.provider.model.Description;
 import com.example.wasp.pokedex.provider.model.Pokedex;
 import com.example.wasp.pokedex.provider.model.Pokemon;
 import com.example.wasp.pokedex.provider.model.Sprite;
@@ -28,6 +29,9 @@ public interface PokeService {
 
     @GET("/{url}")
     Pokemon getPokemon(@EncodedPath("url") String url);
+
+    @GET("/{url}")
+    Description getDescription(@EncodedPath("url") String url);
 
     @GET("/{url}")
     void getSprite(@EncodedPath ("url") String url, Callback<Sprite> cb);

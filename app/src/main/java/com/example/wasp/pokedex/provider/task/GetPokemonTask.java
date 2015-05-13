@@ -4,8 +4,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.example.wasp.pokedex.R;
 import com.example.wasp.pokedex.provider.RestClient;
 import com.example.wasp.pokedex.provider.Service.PokeService;
+import com.example.wasp.pokedex.provider.model.Description;
 import com.example.wasp.pokedex.provider.model.Pokemon;
 
 /**
@@ -36,6 +38,13 @@ public class GetPokemonTask extends AsyncTask<String, Integer, Pokemon> {
         PokeService pokeService = restClient.getPokeService();
 
         result = pokeService.getPokemon(url);
+
+        if(result.getDescriptions() != null && !result.getDescriptions().isEmpty()){
+            Description description = pokeService.getDescription(result.getDescriptions().get(0).getResource_uri());
+            result.setSelectedDescription(description);
+        } else {
+            result.setSelectedDescription(new Description(context.getString(R.string.no_description)));
+        }
 
         return result;
     }

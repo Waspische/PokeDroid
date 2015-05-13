@@ -64,7 +64,7 @@ public class DrawerFragment extends Fragment {
     }
 
     private void buildDrawerList() {
-        drawerItemList.add(new DrawerItem("Pokémon", R.mipmap.tata));
+        drawerItemList.add(new DrawerItem("Pokémon", R.mipmap.ic_pokemons));
         drawerItemList.add(new DrawerItem("PokéItem", R.mipmap.tata) );
         drawerItemList.add(new DrawerItem("CS & CT", R.mipmap.tata) );
     }
