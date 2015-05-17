@@ -11,20 +11,18 @@
         android:layout_height="match_parent">
 
         <!-- Main layout -->
-        <fragment
-            android:id="@+id/person_list"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:name="com.example.wasp.pokedex.ui.pokemons.PokemonsFragment"
-            android:orientation="horizontal" />
+        <FrameLayout
+            android:id="@+id/content_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <!-- Nav drawer -->
-        <fragment
-            android:id="@+id/fragment_drawer"
-            android:name="com.example.wasp.pokedex.ui.drawer.DrawerFragment"
+        <ListView
+            android:id="@+id/drawer_list"
             android:layout_width="250dp"
             android:layout_height="match_parent"
-            android:layout_gravity="left|start" />
+            android:layout_gravity="left|start"
+            android:background="#FFFFFF"></ListView>
 
     </android.support.v4.widget.DrawerLayout>
 

@@ -10,12 +10,17 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.wasp.pokedex.R;
+import com.example.wasp.pokedex.dao.PersistancePokemonsDataSource;
+import com.example.wasp.pokedex.model.PersistancePokemon;
 import com.example.wasp.pokedex.provider.RestClient;
 import com.example.wasp.pokedex.provider.Service.PokeService;
 import com.example.wasp.pokedex.provider.model.Pokemon;
@@ -27,10 +32,12 @@ import com.example.wasp.pokedex.ui.view.SectionsPagerAdapter;
 import com.example.wasp.pokedex.ui.view.SlidingTabLayout;
 import com.squareup.picasso.Picasso;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -38,6 +45,7 @@ import retrofit.client.Response;
 public class PokemonDetailActivity extends ActionBarActivity implements AsyncResponse {
 
     private final String KEY_POKEMON = "pokemon";
+    private final String KEY_PERSISTANCE_POKEMON = "persistancePokemon";
 
     private RestClient restClient = new RestClient();
 
@@ -53,6 +61,9 @@ public class PokemonDetailActivity extends ActionBarActivity implements AsyncRes
     @InjectView(R.id.pokePicture)
     ImageView pokePicture;
 
+    @InjectView(R.id.pokeball)
+    ImageView pokeball;
+
     @InjectView(R.id.sliding_tabs)
     SlidingTabLayout slidingTabLayout;
     @InjectView(R.id.viewPager)
@@ -60,6 +71,9 @@ public class PokemonDetailActivity extends ActionBarActivity implements AsyncRes
 
     @InjectView(R.id.types)
     LinearLayout typesLayout;
+
+    @InjectView(R.id.capture_pokemon_button)
+    Button captureButton;
 
     /**
      * AsyncTask
@@ -73,6 +87,9 @@ public class PokemonDetailActivity extends ActionBarActivity implements AsyncRes
 
     private FragmentPagerAdapter adapter;
 
+    // liaison à la base de données
+    private PersistancePokemonsDataSource dataSource;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +98,16 @@ public class PokemonDetailActivity extends ActionBarActivity implements AsyncRes
 
         // récupération du pokémon
         Pokemon selectedPokemon = (Pokemon) getIntent().getSerializableExtra(KEY_POKEMON);
+        if (selectedPokemon != null) {
+            // on vient de la page principale
+        } else {
+            // on vient dxe la page des pokémons capturés
+            PersistancePokemon pp = (PersistancePokemon) getIntent().getSerializableExtra(KEY_PERSISTANCE_POKEMON);
+            selectedPokemon = new Pokemon();
+            selectedPokemon.setName(pp.getName());
+            selectedPokemon.setNational_id(pp.getNational_id());
+            selectedPokemon.setResource_uri("/api/v1/pokemon/"+pp.getNational_id()+"/");
+        }
 
         // récupération de toutes les infos liées à un pokémon
         getPokemonTask = new GetPokemonTask(this);
@@ -92,6 +119,35 @@ public class PokemonDetailActivity extends ActionBarActivity implements AsyncRes
             this.setSupportActionBar(toolbar);
             this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+        // initialise le lien avec la base de données
+        dataSource = new PersistancePokemonsDataSource(this);
+    }
+
+    @OnClick(R.id.capture_pokemon_button)
+    public void onCaptureClick(){
+        try {
+            dataSource.open();
+            PersistancePokemon result = dataSource.getPokemonByNationalId(pokemon.getNational_id());
+            // le pokemon n'existe pas dans la base
+            if(result == null){
+                dataSource.createPokemon(pokemon.getName(), pokemon.getNational_id());
+
+                Toast.makeText(PokemonDetailActivity.this,
+                        "Well done ! Pokemon captured !", Toast.LENGTH_LONG).show();
+            } else {
+                dataSource.deletePokemonByNayionalId(pokemon.getNational_id());
+                Toast.makeText(PokemonDetailActivity.this,
+                        "He will live peacefully without you ...", Toast.LENGTH_LONG).show();
+            }
+
+            dataSource.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Toast.makeText(PokemonDetailActivity.this,
+                    "An error occured", Toast.LENGTH_SHORT).show();
+        }
+        updateCapturePokemon(pokemon);
     }
 
     @Override
@@ -159,7 +215,7 @@ public class PokemonDetailActivity extends ActionBarActivity implements AsyncRes
             int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, getResources().getDisplayMetrics());
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width, height);
             int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 1, getResources().getDisplayMetrics());
-            layoutParams.setMargins(0,margin,0,margin);
+            layoutParams.setMargins(margin,margin,margin,margin);
             typeButton.setLayoutParams(layoutParams);
             // set style
             typeButton.setBackgroundResource(R.drawable.typed_button);
@@ -221,6 +277,32 @@ public class PokemonDetailActivity extends ActionBarActivity implements AsyncRes
                     break;
             }
             typesLayout.addView(typeButton);
+        }
+
+        // création de la capture
+        updateCapturePokemon(pokemon);
+    }
+
+    public void updateCapturePokemon(Pokemon pokemon){
+        try {
+            dataSource.open();
+            PersistancePokemon result = dataSource.getPokemonByNationalId(pokemon.getNational_id());
+            // le pokemon n'existe pas dans la base
+            if(result == null){
+                pokeball.setVisibility(View.GONE);
+                captureButton.setText("Throw a pokeball !");
+            } else {
+                pokeball.setVisibility(View.VISIBLE);
+                Picasso.with(PokemonDetailActivity.this).load(R.mipmap.ic_emptyball).into(pokeball);
+                captureButton.setText("Set him free !");
+            }
+            captureButton.setVisibility(View.VISIBLE);
+
+            dataSource.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Toast.makeText(PokemonDetailActivity.this,
+                    "An error occured", Toast.LENGTH_SHORT).show();
         }
     }
 

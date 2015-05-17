@@ -20,7 +20,7 @@ public class PersistancePokemonsDataSource {
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
     private String[] allColumns = { MySQLiteHelper.COLUMN_ID,
-            MySQLiteHelper.COLUMN_NAME };
+            MySQLiteHelper.COLUMN_NAME, MySQLiteHelper.COLUMN_NATIONAL_ID };
 
     public PersistancePokemonsDataSource(Context context) {
         dbHelper = new MySQLiteHelper(context);
@@ -34,9 +34,10 @@ public class PersistancePokemonsDataSource {
         dbHelper.close();
     }
 
-    public PersistancePokemon createPokemon(String name) {
+    public PersistancePokemon createPokemon(String name, int nationalId) {
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.COLUMN_NAME, name);
+        values.put(MySQLiteHelper.COLUMN_NATIONAL_ID, nationalId);
         long insertId = database.insert(MySQLiteHelper.TABLE_POKEMONS, null,
                 values);
         Cursor cursor = database.query(MySQLiteHelper.TABLE_POKEMONS,
@@ -57,8 +58,32 @@ public class PersistancePokemonsDataSource {
         database.delete(MySQLiteHelper.TABLE_POKEMONS, selection, selectionArgs);
     }
 
+    public void deletePokemonByNayionalId(int nationalId){
+        // Define 'where' part of query.
+        String selection = MySQLiteHelper.COLUMN_NATIONAL_ID + " LIKE ?";
+        // Specify arguments in placeholder order.
+        String[] selectionArgs = { String.valueOf(nationalId) };
+        // Issue SQL statement.
+        database.delete(MySQLiteHelper.TABLE_POKEMONS, selection, selectionArgs);
+    }
+
     public void deleteAllPokemons(){
         database.delete(MySQLiteHelper.TABLE_POKEMONS, null, null);
+    }
+
+    public PersistancePokemon getPokemonByNationalId(int nationalId){
+        PersistancePokemon pokemon = null;
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_POKEMONS,
+                allColumns, MySQLiteHelper.COLUMN_NATIONAL_ID + " = " + nationalId, null,
+                null, null, null);
+        if (cursor.moveToFirst()) {
+            pokemon = cursorToPokemon(cursor);
+        }
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+
+        return pokemon;
     }
 
     public List<PersistancePokemon> getAllPokemons() {
@@ -82,6 +107,7 @@ public class PersistancePokemonsDataSource {
         PersistancePokemon poke = new PersistancePokemon();
         poke.setId(cursor.getLong(0));
         poke.setName(cursor.getString(1));
+        poke.setNational_id(cursor.getInt(2));
         return poke;
     }
 

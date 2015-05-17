@@ -5,7 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import com.example.wasp.pokedex.model.DrawerItem;
+import com.example.wasp.pokedex.ui.drawer.DrawerItem;
 
 import java.util.List;
 

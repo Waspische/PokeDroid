@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.example.wasp.pokedex.PokeActivity;
 import com.example.wasp.pokedex.R;
 import com.example.wasp.pokedex.dao.PersistancePokemonsDataSource;
 import com.example.wasp.pokedex.provider.model.Pokemon;
@@ -65,6 +66,9 @@ public class PokemonsFragment extends Fragment implements AsyncResponse{
         final View view = inflater.inflate(R.layout.pokemons_fragment, container, false);
         ButterKnife.inject(this, view);
 
+        // change le titre
+        getActivity().setTitle(R.string.pokedex);
+
         // changer l'adapter si on veut mettre plus que le nom
         adapter = new ArrayAdapter<>(view.getContext(),
                 android.R.layout.simple_list_item_1);
@@ -95,33 +99,5 @@ public class PokemonsFragment extends Fragment implements AsyncResponse{
     public void processFinish(Pokemon output) {
         // nothing
     }
-
-    // DEAD CODE
-
-//        dataSource = new PersistancePokemonsDataSource(view.getContext());
-//        try {
-//
-//            pokemons.setAdapter(adapter);
-//
-//            dataSource.open();
-//
-//            dataSource.deleteAllPokemons();
-//
-//            PokeService pokeService = restClient.getPokeService();
-//
-//
-//            new GetAllPokemonsTask(adapter, getActivity()).execute();
-//
-//            List<PersistancePokemon> values = dataSource.getAllPokemons();
-//
-//            // reset pokemon list
-//    //        for (PersistancePokemon value : values) {
-//    //            dataSource.deletePokemon(value.getId());
-//    //        }
-//
-//
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
 
 }

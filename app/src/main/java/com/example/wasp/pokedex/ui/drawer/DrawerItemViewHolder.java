@@ -7,7 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.wasp.pokedex.R;
-import com.example.wasp.pokedex.model.DrawerItem;
+import com.example.wasp.pokedex.ui.drawer.DrawerItem;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

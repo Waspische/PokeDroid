@@ -22,6 +22,10 @@
             android:name=".ui.pokemons.PokemonDetailActivity"
             android:label="@string/title_activity_pokemon_detail" >
         </activity>
+        <activity
+            android:name=".ui.pokemons.CapturedPokemonsActivity"
+            android:label="@string/title_activity_captured_pokemons" >
+        </activity>
     </application>
 
 </manifest>

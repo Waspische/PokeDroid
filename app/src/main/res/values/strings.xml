@@ -4,6 +4,9 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
+    <string name="pokedex">Pokedex</string>
+    <string name="my_pokemons">My Pokemons</string>
+
     <string name="title_activity_pokemon_detail">A wild %1$s appears</string>
     <string name="loading">Loading ...</string>
 
@@ -15,5 +18,7 @@
     <string name="height">Height : %1$s m</string>
     <string name="description">Description : %1$s</string>
     <string name="no_description">Not available</string>
+    <string name="title_activity_captured_pokemons">CapturedPokemonsActivity</string>
+    <string name="capture">Capture</string>
 
 </resources>

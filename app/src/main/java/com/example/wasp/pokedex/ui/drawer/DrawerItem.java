@@ -1,4 +1,6 @@
-package com.example.wasp.pokedex.model;
+package com.example.wasp.pokedex.ui.drawer;
+
+import android.view.View;
 
 import java.io.Serializable;
 
@@ -30,4 +32,5 @@ public class DrawerItem  implements Serializable{
     public void setImage(int image) {
         this.image = image;
     }
+
 }
